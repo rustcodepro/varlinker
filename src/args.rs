@@ -21,6 +21,8 @@ pub enum Commands {
     VariantLINKER {
         /// variant VCF file
         vcfile: String,
+        /// threads for the analysis
+        thread: String,
     },
     /// extract the annotation of the specific ref allele
     VariantTREFANNO {
@@ -28,6 +30,8 @@ pub enum Commands {
         vcffile: String,
         /// ref allele
         refallele: String,
+        /// threads for the analysis
+        thread: String,
     },
     /// extract the annotation of the specific alt allele
     VariantTALTANNO {
@@ -35,5 +39,7 @@ pub enum Commands {
         vcffile: String,
         /// alt allele
         altallel: String,
+        /// threads for the analysis
+        thread: String,
     },
 }

@@ -1,15 +1,15 @@
 [package]
 name = "varlinker"
-version = "0.3.0"
+version = "0.4.0"
 edition = "2024"
 license = "MIT"
 authors = ["Gaurav Sablok <codeprog@icloud.com>"]
 description = "varlinker for human genomics"
-homepage = "https://github.com/omicscode/varlinker"
-repository = "https://github.com/omicscode/varlinker"
+homepage = "https://github.com/rustcodepro/varlinker"
+repository = "https://github.com/rustcodepro/varlinker"
 
 
 [dependencies]
-async-std = "1.13.1"
 clap = { version = "4.5.39", features = ["derive"] }
 figlet-rs = "0.1.5"
+rayon = "1.11.0"

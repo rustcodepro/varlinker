@@ -8,7 +8,6 @@ use crate::args::Commands;
 use crate::varaltannot::varaltanno;
 use crate::variantlinker::varlinker;
 use crate::varrefannot::varrefanno;
-use async_std::task;
 use clap::Parser;
 use figlet_rs::FIGfont;
 
@@ -24,17 +23,43 @@ fn main() {
     println!("{}", figure.unwrap());
     let argsparse = CommandParse::parse();
     match &argsparse.command {
-        Commands::VariantLINKER { vcfile } => {
-            let command = task::block_on(varlinker(vcfile)).unwrap();
-            println!("The command has been completed:{:?}", command);
+        Commands::VariantLINKER { vcfile, thread } => {
+            let pool = rayon::ThreadPoolBuilder::new()
+                .num_threads(thread.parse::<usize>().unwrap())
+                .build()
+                .unwrap();
+            pool.install(|| {
+                let command = varlinker(vcfile).unwrap();
+                println!("The command has been completed:{:?}", command);
+            });
         }
-        Commands::VariantTALTANNO { vcffile, altallel } => {
-            let command = task::block_on(varaltanno(vcffile, altallel)).unwrap();
-            println!("The command has been completed:{:?}", command);
+        Commands::VariantTALTANNO {
+            vcffile,
+            altallel,
+            thread,
+        } => {
+            let pool = rayon::ThreadPoolBuilder::new()
+                .num_threads(thread.parse::<usize>().unwrap())
+                .build()
+                .unwrap();
+            pool.install(|| {
+                let command = varaltanno(vcffile, altallel).unwrap();
+                println!("The command has been completed:{:?}", command);
+            });
         }
-        Commands::VariantTREFANNO { vcffile, refallele } => {
-            let command = task::block_on(varrefanno(vcffile, refallele)).unwrap();
-            println!("The command has been completed:{:?}", command);
+        Commands::VariantTREFANNO {
+            vcffile,
+            refallele,
+            thread,
+        } => {
+            let pool = rayon::ThreadPoolBuilder::new()
+                .num_threads(thread.parse::<usize>().unwrap())
+                .build()
+                .unwrap();
+            pool.install(|| {
+                let command = varrefanno(vcffile, refallele).unwrap();
+                println!("The command has been completed:{:?}", command);
+            });
         }
     }
 }

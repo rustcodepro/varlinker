@@ -1,7 +1,6 @@
 use crate::store::OUTPUT;
 use crate::store::VCF;
 use crate::store::{GenCodeExon, GenCodeGene, GenCodeTranscript};
-use async_std::task;
 use std::error::Error;
 use std::fs::File;
 use std::io::Write;
@@ -10,11 +9,11 @@ use std::path::Path;
 use std::process::Command;
 
 /*
-Author Gaurav Sablok,
-Email: codeprog@icloud.com
+Gaurav Sablok,
+codeprog@icloud.com
 */
 
-pub async fn varaltanno(pathfile: &str, variant: &str) -> Result<String, Box<dyn Error>> {
+pub fn varaltanno(pathfile: &str, variant: &str) -> Result<String, Box<dyn Error>> {
     let pathnew = Path::new("gencode.v48.chr_patch_hapl_scaff.annotation.gtf");
     if !pathnew.exists() {
         let _ = Command::new("wget").
@@ -27,18 +26,13 @@ pub async fn varaltanno(pathfile: &str, variant: &str) -> Result<String, Box<dyn
             .expect("command failed");
         let fileopen = File::open(pathfile).expect("file not present");
         let fileread = BufReader::new(fileopen);
-        let gtfresults_gene: Vec<GenCodeGene> = task::block_on(gtfread_gene_annotation(
-            "gencode.v48.chr_patch_hapl_scaff.annotation.gtf",
-        ))
-        .unwrap();
-        let gtfresults_exon: Vec<GenCodeExon> = task::block_on(gtfread_exon_annotation(
-            "gencode.v48.chr_patch_hapl_scaff.annotation.gtf",
-        ))
-        .unwrap();
-        let gtfresults_transcript: Vec<GenCodeTranscript> = task::block_on(
-            gtfread_transcript_annotation("gencode.v48.chr_patch_hapl_scaff.annotation.gtf"),
-        )
-        .unwrap();
+        let gtfresults_gene: Vec<GenCodeGene> =
+            gtfread_gene_annotation("gencode.v48.chr_patch_hapl_scaff.annotation.gtf").unwrap();
+        let gtfresults_exon: Vec<GenCodeExon> =
+            gtfread_exon_annotation("gencode.v48.chr_patch_hapl_scaff.annotation.gtf").unwrap();
+        let gtfresults_transcript: Vec<GenCodeTranscript> =
+            gtfread_transcript_annotation("gencode.v48.chr_patch_hapl_scaff.annotation.gtf")
+                .unwrap();
         let mut vcstring_file: Vec<VCF> = Vec::new();
         for i in fileread.lines() {
             let linevcf = i.expect("file not present");
@@ -148,7 +142,7 @@ pub async fn varaltanno(pathfile: &str, variant: &str) -> Result<String, Box<dyn
     Ok("The regions have been annotated".to_string())
 }
 
-pub async fn gtfread_gene_annotation(gtffile: &str) -> Result<Vec<GenCodeGene>, Box<dyn Error>> {
+pub fn gtfread_gene_annotation(gtffile: &str) -> Result<Vec<GenCodeGene>, Box<dyn Error>> {
     let fileopen = File::open(gtffile).expect("file not found");
     let fileread = BufReader::new(fileopen);
     let mut gtf_vector: Vec<GenCodeGene> = Vec::new();
@@ -186,7 +180,7 @@ pub async fn gtfread_gene_annotation(gtffile: &str) -> Result<Vec<GenCodeGene>, 
     Ok(gtf_vector)
 }
 
-pub async fn gtfread_exon_annotation(gtffile: &str) -> Result<Vec<GenCodeExon>, Box<dyn Error>> {
+pub fn gtfread_exon_annotation(gtffile: &str) -> Result<Vec<GenCodeExon>, Box<dyn Error>> {
     let fileopen = File::open(gtffile).expect("file not found");
     let fileread = BufReader::new(fileopen);
     let mut gtf_vector: Vec<GenCodeExon> = Vec::new();
@@ -225,7 +219,7 @@ pub async fn gtfread_exon_annotation(gtffile: &str) -> Result<Vec<GenCodeExon>, 
     Ok(gtf_vector)
 }
 
-pub async fn gtfread_transcript_annotation(
+pub fn gtfread_transcript_annotation(
     gtffile: &str,
 ) -> Result<Vec<GenCodeTranscript>, Box<dyn Error>> {
     let fileopen = File::open(gtffile).expect("file not found");
